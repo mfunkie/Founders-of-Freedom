@@ -1,0 +1,10 @@
+{
+    "name": "FreeFound",
+    "version": "0.0.1",
+    "dependencies": {
+        "express": "*",
+        "colors": "*",
+        "roll": "0.3.2",
+        "mongodb": "*"
+    }
+}

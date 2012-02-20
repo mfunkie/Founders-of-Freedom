@@ -14,29 +14,21 @@ app.get('/', function(req, res) {
         var resultsPrint = "";
         results.forEach(function(result) {
             if (resultsPrint === "") {
-                resultsPrint += String(result.roll)
-            } else {
-                resultsPrint += ", " + String(result.roll)
+                resultsPrint += "<table><tr><td>Roll</td><td>Times rolled</td></tr>";
             }
+            resultsPrint += "<tr><td>" + String(result.roll) + "</td><td>" + String(result.count) + "</td></tr>";
             resultsCount -= 1;
             if (resultsCount === 0) {
+                resultsPrint += "</table>";
                 res.send("You rolled a " + thisRoll.result + "<br>" + "All results so far :<br>" + resultsPrint); 
             }
         });
     };
 
     console.log("The user rolled a ".blue + String(thisRoll.result).red);
-
-    if(dbClient) {
-        dbClient.open(function(err, db) {
-            db.collection('rolls', function(err, collection) {
-                collection.insert({ roll: thisRoll.result }, function(docs) {
-                    dbRolls.poll(dbClient, coolback);
-                });
-            });
-        });
-    }
-
+    dbRolls.insert(thisRoll.result, function() {
+        dbRolls.poll(coolback);
+    });
 });
 
 app.listen(3000);
