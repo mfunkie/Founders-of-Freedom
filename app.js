@@ -1,7 +1,7 @@
+(function(){
 var express = require('express'),
     colors = require('colors'),
     roll = require('roll'),
-    dbClient = require('./db').client,
     dbRolls = require('./db').rolls;
 
 var app = express.createServer();
@@ -33,4 +33,4 @@ app.get('/', function(req, res) {
 
 app.listen(3000);
 
-
+}());
