@@ -45,40 +45,40 @@ var pollRolls = function(callback) {
 
 var incrementRollCount = function(rollResult, callback) {
     openTable('rolls', function(db, collection) {
-        openIncrementRollCount(rollResult, collection, function() {
-            db.close();
-            callback();
-        });
+        if(collection) {
+            collection.find({ roll: rollResult }, function(err, cursor) {
+                var foundItem = false;
+                cursor.each(function(err, entry) {
+                    if (entry !== null && !foundItem) {
+                        foundItem = true;
+                        console.log("Found entry for " + rollResult + ". Incrementing count.");
+                        entry["count"] += 1;
+                        collection.save(entry, function(err, result) {
+                            db.close();
+                            callback();
+                        });
+                    }
+                    else if (!foundItem) {
+                        console.log("Couldn't find entry for " + rollResult + ".  Adding to table.");
+                        db.close();
+                        insertRoll(rollResult, callback);
+                    }
+                });
+            });
+        } else {
+           db.close();
+           callback();
+        } 
     });
 };
 
-var openIncrementRollCount = function(rollResult, collection, callback) {
-    if(collection) {
-        collection.find({ roll: rollResult }, function(err, cursor) {
-            var foundItem = false;
-            cursor.each(function(err, entry) {
-                if (entry !== null && !foundItem) {
-                    foundItem = true;
-                    console.log("Found entry for " + rollResult + ". Incrementing count.");
-                    entry["count"] += 1;
-                    collection.save(entry, function(err, result) {
-                        callback();
-                    });
-                }
-                else if (!foundItem) {
-                    console.log("Couldn't find entry for " + rollResult + ".  Adding to table.");
-                    insertRoll(rollResult, callback);
-                }
-            });
-        });
-    } else {
-       callback();
-    } 
-};
-
 var insertRoll = function(rollResult, callback) {
+    var tRoll = {
+                    roll: rollResult,
+                    "count": 1
+                };
     openTable('rolls', function(db, collection) {
-        collection.insert({ roll: rollResult, "count": 1 }, function(docs) {
+        collection.insert( tRoll, function(docs) {
             db.close();
             callback();
         });
