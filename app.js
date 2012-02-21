@@ -2,7 +2,7 @@
 var express = require('express'),
     colors = require('colors'),
     roll = require('roll'),
-    dbRolls = require('./db').rolls;
+    dbRolls = require('./rolls').rolls;
 
 var app = express.createServer();
 
@@ -11,6 +11,11 @@ app.get('/', function(req, res) {
 
     var coolback = function(results) {
         var resultsCount = results.length;
+        if (results.length > 0) {
+            results.sort(function(a,b) {
+                return a.roll - b.roll;
+            });
+        }
         var resultsPrint = "";
         results.forEach(function(result) {
             if (resultsPrint === "") {
