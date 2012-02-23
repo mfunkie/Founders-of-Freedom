@@ -6,6 +6,15 @@ var express = require('express'),
 
 var app = express.createServer();
 
+app.configure(function() {
+    app.set('views', __dirname + '/views');
+    app.use(express.logger());
+    app.use(express.bodyParser());
+    
+    //Don't render a layout on a global basis... for now
+    app.set('view options', {layout: false} );
+});
+
 app.get('/', function(req, res) {
     var thisRoll = roll.roll('2d6');
 
@@ -17,17 +26,8 @@ app.get('/', function(req, res) {
             });
         }
         var resultsPrint = "";
-        results.forEach(function(result) {
-            if (resultsPrint === "") {
-                resultsPrint += "<table><tr><td>Roll</td><td>Times rolled</td></tr>";
-            }
-            resultsPrint += "<tr><td>" + String(result.roll) + "</td><td>" + String(result.count) + "</td></tr>";
-            resultsCount -= 1;
-            if (resultsCount === 0) {
-                resultsPrint += "</table>";
-                res.send("You rolled a " + thisRoll.result + "<br>" + "All results so far :<br>" + resultsPrint); 
-            }
-        });
+        var youRolledA = "You rolled a " +  thisRoll.result;
+        res.render('index.jade', { results: results, thisRoll: youRolledA } );
     };
 
     console.log("The user rolled a ".blue + String(thisRoll.result).red);

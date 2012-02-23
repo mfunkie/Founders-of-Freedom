@@ -1,0 +1,10 @@
+div
+    table#Rolls
+        thead
+            tr: th=thisRoll
+            tr: th Rolls so far
+        tbody
+            each roll in results
+                tr
+                    td= roll.roll
+                    td= roll.count
