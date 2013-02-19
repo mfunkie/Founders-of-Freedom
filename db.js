@@ -2,25 +2,28 @@
 
 var fs = require('fs'),
     mongoDb = require('mongodb').Db,
-    mongoServer = require('mongodb').Server;
-
-var dbSettingsFile = __dirname + "/settings.json",
+    mongoServer = require('mongodb').Server,
+    dbSettingsFile = __dirname + "/settings.json",
     dbSettings = {},
-    dbClient;
+    dbClient,
+    connectToDB,
+    thisFile,
+    dbClient,
+    openTable;
 
-var connectToDB = function(databaseSettings) {
+connectToDB = function(databaseSettings) {
     console.log("Connecting to " + databaseSettings.server + " at port " + databaseSettings.port);
     return new mongoDb(databaseSettings.name, new mongoServer(databaseSettings.server, databaseSettings.port, {}));
 };
 
-var thisFile = fs.readFileSync(dbSettingsFile);
+thisFile = fs.readFileSync(dbSettingsFile);
 
 dbSettings = JSON.parse(thisFile);
 console.log("Database: ".blue + dbSettings.database.name);
 
-var dbClient = connectToDB(dbSettings.database);
+dbClient = connectToDB(dbSettings.database);
 
-var openTable = function(tableName, executeFunction) {
+openTable = function(tableName, executeFunction) {
     if (dbClient) {
         dbClient.open(function(err, db) {
             db.collection(tableName, function(err, collection) {
