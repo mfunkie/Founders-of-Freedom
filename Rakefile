@@ -6,7 +6,7 @@ task :clean do
     sh "ls -G"
 end
 
-task :buildAndRun do
+task :run do
     sh "node app.js"
 end
 
